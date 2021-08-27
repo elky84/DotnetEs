@@ -14,7 +14,7 @@ namespace LogQueryServer
     {
         public Startup(IConfiguration configuration)
         {
-            System.Text.EncodingProvider provider = System.Text.CodePagesEncodingProvider.Instance;
+            EncodingProvider provider = CodePagesEncodingProvider.Instance;
             Encoding.RegisterProvider(provider);
 
             Log.Logger = new LoggerConfiguration()
@@ -45,23 +45,23 @@ namespace LogQueryServer
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
+            if (env.IsDevelopment() || env.IsProduction())
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "LogQueryServer v1"));
+
+                app.UseHttpsRedirection();
+
+                app.UseRouting();
+
+                app.UseAuthorization();
+
+                app.UseEndpoints(endpoints =>
+                {
+                    endpoints.MapControllers();
+                });
             }
-
-            app.UseHttpsRedirection();
-
-            app.UseRouting();
-
-            app.UseAuthorization();
-
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
         }
     }
 }

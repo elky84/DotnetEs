@@ -17,7 +17,6 @@
 
   <ItemGroup>
     <Folder Include="Protocols\Common\" />
-    <Folder Include="Protocols\Request\" />
   </ItemGroup>
 
 </Project>

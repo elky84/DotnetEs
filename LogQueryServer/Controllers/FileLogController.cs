@@ -1,12 +1,11 @@
-﻿using Elasticsearch.Net;
-using LogQueryServer.Models;
+﻿using LogQueryServer.Models;
+using LogQueryServer.Protocols.Request;
 using LogQueryServer.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Nest;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace LogQueryServer.Controllers
@@ -39,16 +38,16 @@ namespace LogQueryServer.Controllers
         }
 
         [HttpGet("{index}/{id}")]
-        public async Task<GenericData> Get(string index, int id)
+        public async Task<FileLogData> Get(string index, int id)
         {
-            var response = await _elasticClient.GetAsync<GenericData>(id, idx => idx.Index(index)); // returns an IGetResponse mapped 1-to-1 with the Elasticsearch JSON response
+            var response = await _elasticClient.GetAsync<FileLogData>(id, idx => idx.Index(index)); // returns an IGetResponse mapped 1-to-1 with the Elasticsearch JSON response
             return response.Source; // the original document
         }
 
         [HttpPost("{index}/query")]
-        public async Task<IEnumerable<GenericData>> Query(string index, [FromQuery]Pageable pageable, [FromBody]Query query)
+        public async Task<IEnumerable<FileLogData>> Query(string index, [FromQuery] Pageable pageable, [FromBody] Query query)
         {
-            var searchResponse = await _elasticClient.SearchAsync<GenericData>(sd => sd
+            var searchResponse = await _elasticClient.SearchAsync<FileLogData>(sd => sd
                 .Index(index)
                 .From(pageable.From)
                 .Size(pageable.Size)
@@ -57,11 +56,22 @@ namespace LogQueryServer.Controllers
             return searchResponse.Documents;
         }
 
+        [HttpPost("{index}/custom")]
+        public async Task<IEnumerable<FileLogData>> Custom(string index, [FromQuery] Pageable pageable, [FromBody] FileLog fileLog)
+        {
+            var searchResponse = await _elasticClient.SearchAsync<FileLogData>(sd => sd
+                .Index(index)
+                .From(pageable.From)
+                .Size(pageable.Size)
+                .Query(q => fileLog.ToQueryContainer(q)));
+
+            return searchResponse.Documents;
+        }
 
         [HttpGet("{index}")]
-        public async Task<IEnumerable<GenericData>> Get(string index, [FromQuery]Pageable pageable)
+        public async Task<IEnumerable<FileLogData>> Get(string index, [FromQuery] Pageable pageable)
         {
-            var searchResponse = await _elasticClient.SearchAsync<GenericData>(sd => sd
+            var searchResponse = await _elasticClient.SearchAsync<FileLogData>(sd => sd
                 .Index(index)
                 .From(pageable.From)
                 .Size(pageable.Size));

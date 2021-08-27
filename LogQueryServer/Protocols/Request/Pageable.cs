@@ -1,8 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-
-namespace LogQueryServer.Models
+﻿namespace LogQueryServer.Protocols.Request
 {
     public class Pageable
     {

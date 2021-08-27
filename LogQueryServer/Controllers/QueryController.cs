@@ -1,12 +1,10 @@
 ﻿using Elasticsearch.Net;
 using LogQueryServer.Models;
+using LogQueryServer.Protocols.Request;
 using LogQueryServer.Services;
-using LogQueryServer.Settings;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Nest;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
