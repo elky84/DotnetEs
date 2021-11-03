@@ -34,53 +34,45 @@ namespace LogQueryServer.Controllers
         }
 
         [HttpPost("{index}")]
-        public async Task<string> Post(string index, [FromBody] GenericData value)
+        public async Task<string> Post(string index, [FromBody] GenericRequestData value)
         {
-            var jobject = JsonSerializer.Serialize(value, new JsonSerializerOptions
+            var requestData = new GenericData { Date = value.Date, Content = value.Content };
+            var countResponse = await _elasticClient.CountAsync<GenericData>(sd => sd
+                .Index(index));
+
+            requestData.Id = (countResponse.Count + 1).ToString();
+
+            var jobject = JsonSerializer.Serialize(requestData, new JsonSerializerOptions
             {
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
             });
 
-            //dynamic ex = new ExpandoObject();
-            //ex.Id = logData.Id;
-            //ex.Date = logData.Date;
-
-            //var dict = ex as IDictionary<string, dynamic>;
-            //foreach (var kvp in logData.Content)
-            //{
-            //    dict[kvp.Key] = kvp.Value;
-            //}
-
-            //var json = JsonConvert.SerializeObject(ex);
-            //var request = new IndexRequest<object>(ex, index, logData.Id);
-            //var response = await _elasticClient.IndexAsync<object>(request); //or specify index via settings.DefaultIndex("mytweetindex");
-
-            var response = await _elasticClient.LowLevel.IndexAsync<StringResponse>(index, value.Id.ToString(), PostData.String(jobject));
+            var response = await _elasticClient.LowLevel.IndexAsync<StringResponse>(index, requestData.Id, PostData.String(jobject));
             return response.Body;
         }
 
         [HttpGet("{index}/{id}")]
-        public async Task<GenericData> Get(string index, int id)
+        public async Task<GenericData> Get(string index, long id)
         {
             var response = await _elasticClient.GetAsync<GenericData>(id, idx => idx.Index(index)); // returns an IGetResponse mapped 1-to-1 with the Elasticsearch JSON response
             return response.Source; // the original document
         }
 
         [HttpPost("{index}/query")]
-        public async Task<IEnumerable<GenericData>> Query(string index, [FromQuery]Pageable pageable, [FromBody]Query query)
+        public async Task<IEnumerable<GenericData>> Query(string index, [FromQuery] Pageable pageable, [FromBody] Query query)
         {
             var searchResponse = await _elasticClient.SearchAsync<GenericData>(sd => sd
                 .Index(index)
                 .From(pageable.From)
                 .Size(pageable.Size)
-                .Query(q => query.Queries.Select(rq => q.Match(m => m.Field(rq.Key).Query(rq.Value))).Aggregate((c1, c2) => c1 || c2)));
-
+                .Query(q => query.Queries.Select(rq => q.Wildcard(c => c.Field(rq.Key).Value(rq.Value)))
+                .Aggregate((c1, c2) => c1 || c2)));
             return searchResponse.Documents;
         }
 
 
         [HttpGet("{index}")]
-        public async Task<IEnumerable<GenericData>> Get(string index, [FromQuery]Pageable pageable)
+        public async Task<IEnumerable<GenericData>> Get(string index, [FromQuery] Pageable pageable)
         {
             var searchResponse = await _elasticClient.SearchAsync<GenericData>(sd => sd
                 .Index(index)

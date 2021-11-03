@@ -4,11 +4,10 @@ using System.Collections.Generic;
 
 namespace LogQueryServer.Models
 {
-    public class GenericData
+    public class GenericRequestData
     {
-        public string Id { get; set; }
 
-        public DateTime Date { get; set; }
+        public DateTime Date { get; set; } = DateTime.Now;
 
         public dynamic Content { get; set; }
     }
