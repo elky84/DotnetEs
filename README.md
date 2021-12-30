@@ -10,4 +10,12 @@
 ![GitHub repo size in bytes](https://img.shields.io/github/repo-size/elky84/elasticsearch-query-server.svg)
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/elky84/elasticsearch-query-server.svg)
 
-# elasticsearch-query-server
+# ElasticsearchQueryServer
+
+## introduce
+
+In C#, this is an example of a web server using the ElasticSearch function using NEST.
+
+It was developed using [EzAspDotnet](https://github.com/elky84/EzAspDotnet/), and its main function is to wrap the functions of NEST in general and provide the functions as a REST API.
+
+The future development goal is to extend the API to add more general-purpose functions. (alarms, statistics, etc)
