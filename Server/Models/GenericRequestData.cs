@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace LogQueryServer.Models
+namespace Server.Models
 {
     public class GenericRequestData
     {

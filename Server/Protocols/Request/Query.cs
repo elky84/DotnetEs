@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace LogQueryServer.Protocols.Request
+namespace Server.Protocols.Request
 {
     public class Query
     {

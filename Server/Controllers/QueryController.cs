@@ -1,7 +1,6 @@
 ﻿using Elasticsearch.Net;
-using LogQueryServer.Models;
-using LogQueryServer.Protocols.Request;
-using LogQueryServer.Services;
+using Server.Models;
+using Server.Protocols.Request;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Nest;
@@ -9,8 +8,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using EzAspDotNet.Protocols.Page;
+using EzAspDotNet.Services;
 
-namespace LogQueryServer.Controllers
+namespace Server.Controllers
 {
     [ApiController]
     [Route("[controller]")]
@@ -63,8 +64,8 @@ namespace LogQueryServer.Controllers
         {
             var searchResponse = await _elasticClient.SearchAsync<GenericData>(sd => sd
                 .Index(index)
-                .From(pageable.From)
-                .Size(pageable.Size)
+                .From(pageable.Offset)
+                .Size(pageable.Limit)
                 .Query(q => query.Queries.Select(rq => q.Wildcard(c => c.Field(rq.Key).Value(rq.Value)))
                 .Aggregate((c1, c2) => c1 || c2)));
             return searchResponse.Documents;
@@ -76,8 +77,8 @@ namespace LogQueryServer.Controllers
         {
             var searchResponse = await _elasticClient.SearchAsync<GenericData>(sd => sd
                 .Index(index)
-                .From(pageable.From)
-                .Size(pageable.Size));
+                .From(pageable.Offset)
+                .Size(pageable.Limit));
 
             return searchResponse.Documents;
         }

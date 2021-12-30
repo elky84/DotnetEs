@@ -1,4 +1,4 @@
-using LogQueryServer.Services;
+using Server.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -7,8 +7,9 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using System.Text;
+using EzAspDotNet.Services;
 
-namespace LogQueryServer
+namespace Server
 {
     public class Startup
     {
@@ -39,7 +40,6 @@ namespace LogQueryServer
 
             services.AddSingleton<IHostedService, LogRepeatedServie>();
             services.AddSingleton<QueryService>();
-            services.AddSingleton<AggregateService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

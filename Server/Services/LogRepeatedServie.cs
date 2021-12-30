@@ -1,9 +1,10 @@
-﻿using System;
-using LogQueryServer.Exception;
+﻿using EzAspDotNet.Exception;
+using EzAspDotNet.Service;
+using System;
 
-namespace LogQueryServer.Services
+namespace Server.Services
 {
-    public class LogRepeatedServie : RepeatedService
+    public class LogRepeatedServie : RepeatedTimerService
     {
         public LogRepeatedServie()
             : base(new TimeSpan(0, 2, 0))
@@ -16,7 +17,7 @@ namespace LogQueryServer.Services
             {
                
             }
-            catch (System.Exception e)
+            catch (Exception e)
             {
                 e.ExceptionLog();
             }
