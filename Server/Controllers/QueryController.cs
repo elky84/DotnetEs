@@ -43,16 +43,16 @@ namespace Server.Controllers
 
             requestData.Id = (countResponse.Count + 1).ToString();
 
-            var jobject = JsonSerializer.Serialize(requestData, new JsonSerializerOptions
+            var jObject = JsonSerializer.Serialize(requestData, new JsonSerializerOptions
             {
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
             });
 
-            var response = await _elasticClient.LowLevel.IndexAsync<StringResponse>(index, requestData.Id, PostData.String(jobject));
+            var response = await _elasticClient.LowLevel.IndexAsync<StringResponse>(index, requestData.Id, PostData.String(jObject));
             return response.Body;
         }
 
-        [HttpGet("{index}/{id}")]
+        [HttpGet("{index}/{id:long}")]
         public async Task<GenericData> Get(string index, long id)
         {
             var response = await _elasticClient.GetAsync<GenericData>(id, idx => idx.Index(index)); // returns an IGetResponse mapped 1-to-1 with the Elasticsearch JSON response

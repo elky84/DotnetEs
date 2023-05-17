@@ -4,9 +4,9 @@ using System;
 
 namespace Server.Services
 {
-    public class LogRepeatedServie : RepeatedTimerService
+    public class LogRepeatedService : RepeatedTimerService
     {
-        public LogRepeatedServie()
+        public LogRepeatedService()
             : base(new TimeSpan(0, 2, 0))
         {
         }

@@ -15,7 +15,7 @@ namespace Server
     {
         public Startup(IConfiguration configuration)
         {
-            EncodingProvider provider = CodePagesEncodingProvider.Instance;
+            var provider = CodePagesEncodingProvider.Instance;
             Encoding.RegisterProvider(provider);
 
             Log.Logger = new LoggerConfiguration()
@@ -38,30 +38,29 @@ namespace Server
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "LogQueryServer", Version = "v1" });
             });
 
-            services.AddSingleton<IHostedService, LogRepeatedServie>();
+            services.AddSingleton<IHostedService, LogRepeatedService>();
             services.AddSingleton<QueryService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment() || env.IsProduction())
+            if (!env.IsDevelopment() && !env.IsProduction()) return;
+            
+            app.UseDeveloperExceptionPage();
+            app.UseSwagger();
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "LogQueryServer v1"));
+
+            app.UseHttpsRedirection();
+
+            app.UseRouting();
+
+            app.UseAuthorization();
+
+            app.UseEndpoints(endpoints =>
             {
-                app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "LogQueryServer v1"));
-
-                app.UseHttpsRedirection();
-
-                app.UseRouting();
-
-                app.UseAuthorization();
-
-                app.UseEndpoints(endpoints =>
-                {
-                    endpoints.MapControllers();
-                });
-            }
+                endpoints.MapControllers();
+            });
         }
     }
 }
